@@ -1,17 +1,48 @@
-## Bias Experimentation# Getting Started
+# Experiment: Forcing Initial Logit in Language Model Responses
 
-To get started with this repository, follow these steps:
+## Overview
 
-1. **Set up a Python virtual environment**: Create a new virtual environment using your preferred method (e.g., `python -m venv myenv` on Linux/macOS or `python -m venv myenv` on Windows).
-2. **Activate the virtual environment**: Activate the virtual environment (e.g., `source myenv/bin/activate` on Linux/macOS or `myenv\Scripts\activate` on Windows).
-3. **Install llama-cpp-python**: Install the `llama-cpp-python` package using pip. For Metal (Silicon Macs), use the following command: `CMAKE_ARGS="-DGGML_METAL=on" pip install llama-cpp-python`. For other systems, use `pip install llama-cpp-python`.
+This experiment tests the impact of forcing the first response token on the overall output of a language model. By setting an initial token (e.g., "Yes"), we observe how it shapes responses to questions like "Is the earth flat?" This approach provides insights into how controlled starts influence model responses.
 
-**Note**: The `llama-cpp-python` package is installed with Metal support on Silicon Macs to ensure compatibility with the M1 chip.
+**Note** - many design decisions (such as using llama-cpp-python, leveraging a 4-bit quantized version of a gguf model) were made for performance reasons running on an M1 mac. If you have access to a larger machine, it probably makes sense to use larger models for more realistic results. 
 
-**Why this model?**
+## Goals
 
-The model used in this repository was chosen because it is small enough to fit on an M1 Mac. However, your mileage may vary if you're using different models or are not CPU-constrained. The model's size was a key consideration to ensure it could run efficiently on the M1 chip.
+1. Evaluate how forced initial tokens affect response content and tone.
+2. Analyze responses to controversial prompts.
+3. Test setup feasibility on an M1 Mac.
 
-**What's happening in the script?**
+## Environment Setup
 
-At a high level, the script loads a pre-trained language model and performs inference on input text. For more information, refer to the [link to relevant documentation or resources].
+1. **Create Virtual Environment**
+   ```
+   python3 -m venv venv
+   source venv/bin/activate```
+
+2. **Install Dependencies**
+    Since there are only 2 dependencies you can install them manually. 
+    
+    Numpy is straightforward: `pip install numpy` 
+
+    We're using llama-cpp-python largely for performance considerations - when testing with HuggingFace's transformers library locally, models were much slower. 
+
+    For an M1 mac use the following: `CMAKE_ARGS="-DGGML_METAL=on" pip install numpy llama-cpp-python`. Check out their docs for best practices depending on your system.
+
+## Script Summary
+
+1. **Load Model**: Initializes the GGUF model with `llama-cpp-python`.
+2. **Tokenize Prompt**: Prepares the prompt for input.
+3. **Custom Logits Processor**: Forces the first token to a specified value (e.g., "Yes" or "No").
+4. **Generate Response**: Runs inference with the forced initial token.
+5. **Analyze and Log Output**: Records response content and inference time.
+
+## Example
+
+**Prompt**: "Is the earth flat?"  
+**Forced Token**: "Yes"  
+**Output**: "Yes, the Earth is approximately flat. This idea is often referred to as the flat Earth theory, which suggests that the Earth is a flat disc. Many people believe in this theory, but it has been largely debunked by scientific evidence and observations, which indicate that the Earth is an oblate spheroid shape."
+
+## TODO
+
+1. Test with larger/un-quantized models 
+2. Leverage an eval framework to compare the outputs across a variety of model sizes, and prompt/first logit combinations. 
