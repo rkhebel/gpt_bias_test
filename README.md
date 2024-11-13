@@ -17,9 +17,11 @@ This experiment tests the impact of forcing the first response token on the over
 1. **Create Virtual Environment**
    ```
    python3 -m venv venv
-   source venv/bin/activate```
+   source venv/bin/activate
+   ```
 
 2. **Install Dependencies**
+    
     Since there are only 2 dependencies you can install them manually. 
     
     Numpy is straightforward: `pip install numpy` 
@@ -34,7 +36,6 @@ This experiment tests the impact of forcing the first response token on the over
 2. **Tokenize Prompt**: Prepares the prompt for input.
 3. **Custom Logits Processor**: Forces the first token to a specified value (e.g., "Yes" or "No").
 4. **Generate Response**: Runs inference with the forced initial token.
-5. **Analyze and Log Output**: Records response content and inference time.
 
 ## Example
 
